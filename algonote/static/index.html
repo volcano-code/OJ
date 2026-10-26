@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="AlgoNote 刷题手记：收藏题目，理解自己的解法，独立再做一次。">
+  <title>AlgoNote · 刷题手记</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#library" id="brand-link" aria-label="AlgoNote 返回题库">
+      <span class="brand-mark" aria-hidden="true">a<span>·</span></span>
+      <span class="brand-word">AlgoNote<small>刷题手记</small></span>
+    </a>
+    <nav class="header-nav" aria-label="主导航">
+      <button class="nav-button active" type="button" id="nav-library">我的题库</button>
+      <button class="nav-button" type="button" id="nav-new">录入题目</button>
+    </nav>
+    <button class="icon-button settings-toggle" type="button" id="settings-toggle" aria-label="设置与数据备份" aria-expanded="false">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg>
+      <span>设置</span>
+    </button>
+  </header>
+  <aside id="settings-panel" class="settings-panel" aria-label="设置与数据备份" hidden>
+    <div class="section-heading"><div><p class="eyebrow">WORKSPACE</p><h2>设置与数据</h2></div><button class="icon-button" type="button" id="settings-close" aria-label="关闭设置">×</button></div>
+    <div id="service-status" class="service-status"></div>
+    <label class="field-label" for="access-token">访问口令</label>
+    <p class="field-help">仅在服务端设置了访问口令时需要。只保存在当前浏览器会话。</p>
+    <form id="token-form" class="token-row"><input id="access-token" type="password" autocomplete="off" placeholder="输入个人访问口令"><button class="button button-primary" type="submit">连接</button></form>
+    <div class="settings-divider"></div>
+    <h3>带走你的积累</h3><p class="field-help">导出题目、参考代码、题解和历史记录。恢复时选择备份压缩包中的 backup.json。</p>
+    <div class="button-row"><button class="button button-secondary" type="button" id="export-button">导出完整备份</button><button class="button button-quiet" type="button" id="import-button">导入备份</button><input type="file" id="import-file" accept="application/json,.json" hidden></div>
+    <p class="settings-footnote">C++17 · Python 3 · 个人题库</p>
+  </aside>
+  <main id="app" tabindex="-1"><div class="loading-state"><span class="spinner" aria-hidden="true"></span><p>正在打开你的题库…</p></div></main>
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="false"></div>
+  <footer class="site-footer"><span>AlgoNote · 写过，再想通。</span><span>每一次重做，都算数。</span></footer>
+  <noscript>请启用 JavaScript 后使用刷题手记。</noscript>
+</body>
+</html>

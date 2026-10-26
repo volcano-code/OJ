@@ -1,0 +1,102 @@
+{
+  "passed": 16,
+  "scope": "Fixed bundled developer examples only; host compiler adapter verification, not Docker isolation",
+  "checks": [
+    {
+      "problem": "演示 · 两数之和",
+      "language": "python",
+      "case": "基础样例",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 两数之和",
+      "language": "python",
+      "case": "重复元素",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 两数之和",
+      "language": "python",
+      "case": "负数与零",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 两数之和",
+      "language": "cpp",
+      "case": "基础样例",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 两数之和",
+      "language": "cpp",
+      "case": "重复元素",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 两数之和",
+      "language": "cpp",
+      "case": "负数与零",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 多组整数求和",
+      "language": "python",
+      "case": "多组输入",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 多组整数求和",
+      "language": "python",
+      "case": "大整数",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 多组整数求和",
+      "language": "cpp",
+      "case": "多组输入",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 多组整数求和",
+      "language": "cpp",
+      "case": "大整数",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 反转链表",
+      "language": "python",
+      "case": "三个节点",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 反转链表",
+      "language": "python",
+      "case": "空链表",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 反转链表",
+      "language": "python",
+      "case": "单节点",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 反转链表",
+      "language": "cpp",
+      "case": "三个节点",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 反转链表",
+      "language": "cpp",
+      "case": "空链表",
+      "passed": true
+    },
+    {
+      "problem": "演示 · 反转链表",
+      "language": "cpp",
+      "case": "单节点",
+      "passed": true
+    }
+  ]
+}

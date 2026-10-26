@@ -1,0 +1,4 @@
+*
+!algonote/
+!algonote/runner_worker.py
+!Dockerfile.runner

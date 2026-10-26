@@ -1,0 +1,208 @@
+{
+  "problems": [
+    {
+      "source_url": "https://leetcode.com/problems/two-sum/",
+      "difficulty": "easy",
+      "tags": [
+        "数组",
+        "哈希表"
+      ],
+      "notes": "项目自带演示题，题面和扩展测试由项目编写，用于验证操作流程。",
+      "mastery": "new",
+      "id": "10a00000000000000000000000000001",
+      "title": "演示 · 两数之和",
+      "source": "leetcode",
+      "statement": "## 问题\n给定整数数组 nums 和目标值 target，返回两个不同位置的下标，使这两个位置的值相加等于 target。\n\n本演示保证恰有一组答案，下标从 0 开始；返回的两个下标顺序不限。\n\n## 示例\nnums = [2, 7, 11, 15]，target = 9，返回 [0, 1]。\n\n## 范围\n2 ≤ 数组长度 ≤ 1000；元素与目标值均在 -100000 到 100000 之间。",
+      "mode": "function",
+      "signature": {
+        "name": "twoSum",
+        "class_name": "Solution",
+        "parameters": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "target",
+            "type": "int"
+          }
+        ],
+        "returns": "int[]",
+        "capture_argument": 0
+      },
+      "comparison": "unordered",
+      "references": {
+        "python": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        seen = {}\n        for i, value in enumerate(nums):\n            if target - value in seen:\n                return [seen[target - value], i]\n            seen[value] = i\n        return []\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        unordered_map<int, int> seen;\n        for (int i = 0; i < (int)nums.size(); ++i) {\n            auto it = seen.find(target - nums[i]);\n            if (it != seen.end()) return {it->second, i};\n            seen[nums[i]] = i;\n        }\n        return {};\n    }\n};\n"
+      },
+      "templates": {
+        "python": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        # 在这里重新实现\n        pass\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // 在这里重新实现\n        return {};\n    }\n};\n"
+      },
+      "tests": [
+        {
+          "name": "基础样例",
+          "input": [
+            [
+              2,
+              7,
+              11,
+              15
+            ],
+            9
+          ],
+          "expected": [
+            0,
+            1
+          ],
+          "sample": true
+        },
+        {
+          "name": "重复元素",
+          "input": [
+            [
+              3,
+              3
+            ],
+            6
+          ],
+          "expected": [
+            0,
+            1
+          ],
+          "sample": true
+        },
+        {
+          "name": "负数与零",
+          "input": [
+            [
+              -3,
+              4,
+              3,
+              90
+            ],
+            0
+          ],
+          "expected": [
+            0,
+            2
+          ],
+          "sample": false
+        }
+      ]
+    },
+    {
+      "source_url": "",
+      "difficulty": "easy",
+      "tags": [
+        "输入输出",
+        "基础"
+      ],
+      "notes": "项目自带演示题，题面和扩展测试由项目编写，用于验证操作流程。",
+      "mastery": "new",
+      "id": "10a00000000000000000000000000002",
+      "title": "演示 · 多组整数求和",
+      "source": "nowcoder",
+      "statement": "## 问题\n这是标准输入输出模式的演示。每行输入两个整数 a、b，输出它们的和。读取到文件结束为止。\n\n## 输入\n多行文本，每行两个整数，用空白分隔。\n\n## 输出\n每组数据输出一行 a + b。\n\n## 示例\n输入：\n```text\n1 2\n-3 5\n```\n输出：\n```text\n3\n2\n```\n\n每个整数的绝对值不超过 10^12。",
+      "mode": "stdin",
+      "signature": null,
+      "comparison": "tokens",
+      "references": {
+        "python": "import sys\n\nfor line in sys.stdin:\n    if line.strip():\n        a, b = map(int, line.split())\n        print(a + b)\n",
+        "cpp": "#include <iostream>\nusing namespace std;\nint main() {\n    long long a, b;\n    while (cin >> a >> b) cout << a + b << \"\\n\";\n    return 0;\n}\n"
+      },
+      "templates": {
+        "python": "import sys\n\n# 读取输入并输出答案\n",
+        "cpp": "#include <iostream>\nusing namespace std;\n\nint main() {\n    // 读取输入并输出答案\n    return 0;\n}\n"
+      },
+      "tests": [
+        {
+          "name": "多组输入",
+          "input": "1 2\n-3 5\n",
+          "expected": "3\n2\n",
+          "sample": true
+        },
+        {
+          "name": "大整数",
+          "input": "1000000000000 1000000000000\n0 0\n",
+          "expected": "2000000000000\n0\n",
+          "sample": false
+        }
+      ]
+    },
+    {
+      "source_url": "",
+      "difficulty": "easy",
+      "tags": [
+        "链表",
+        "双指针"
+      ],
+      "notes": "项目自带演示题，题面和扩展测试由项目编写，用于验证操作流程。",
+      "mastery": "new",
+      "id": "10a00000000000000000000000000003",
+      "title": "演示 · 反转链表",
+      "source": "leetcode",
+      "statement": "## 问题\n给定单链表的头节点 head，反转链表并返回新的头节点。\n\n## 示例\n输入链表 [1, 2, 3]，返回 [3, 2, 1]。空链表用 [] 表示。\n\n本演示约定最多 1000 个节点，节点值为 32 位整数。界面中的数组会自动转换为 ListNode 对象。",
+      "mode": "function",
+      "signature": {
+        "name": "reverseList",
+        "class_name": "Solution",
+        "parameters": [
+          {
+            "name": "head",
+            "type": "ListNode"
+          }
+        ],
+        "returns": "ListNode",
+        "capture_argument": 0
+      },
+      "comparison": "exact",
+      "references": {
+        "python": "class Solution:\n    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        prev = None\n        while head:\n            nxt = head.next\n            head.next = prev\n            prev, head = head, nxt\n        return prev\n",
+        "cpp": "class Solution {\npublic:\n    ListNode* reverseList(ListNode* head) {\n        ListNode* prev = nullptr;\n        while (head != nullptr) {\n            ListNode* next = head->next;\n            head->next = prev;\n            prev = head;\n            head = next;\n        }\n        return prev;\n    }\n};\n"
+      },
+      "templates": {
+        "python": "class Solution:\n    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        pass\n",
+        "cpp": "class Solution {\npublic:\n    ListNode* reverseList(ListNode* head) {\n        return nullptr;\n    }\n};\n"
+      },
+      "tests": [
+        {
+          "name": "三个节点",
+          "input": [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "expected": [
+            3,
+            2,
+            1
+          ],
+          "sample": true
+        },
+        {
+          "name": "空链表",
+          "input": [
+            []
+          ],
+          "expected": [],
+          "sample": true
+        },
+        {
+          "name": "单节点",
+          "input": [
+            [
+              8
+            ]
+          ],
+          "expected": [
+            8
+          ],
+          "sample": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "algonote"
+version = "0.1.1"
+description = "Lightweight personal algorithm notebook for C++ and Python"
+requires-python = ">=3.11"
+dynamic = ["dependencies"]
+
+[project.scripts]
+algonote = "algonote.__main__:main"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["algonote*"]
+
+[tool.setuptools.package-data]
+algonote = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

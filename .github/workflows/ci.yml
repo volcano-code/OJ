@@ -1,0 +1,29 @@
+name: Verify AlgoNote
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Validate JavaScript syntax
+        run: node --check algonote/static/app.js
+      - name: Build isolated runner
+        run: python -m algonote prepare-runner
+      - name: Test local deployment diagnostics
+        run: python -m algonote doctor --run-check --json
+      - name: Test storage, API, adapters, and real Docker execution
+        env:
+          ALGONOTE_DOCKER_TESTS: '1'
+        run: python -m pytest -q
