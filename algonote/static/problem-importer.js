@@ -53,7 +53,7 @@
 
       if (!title) {
         const titleMatch = line.match(/^(?:题目\s*)?(?:\d+\s*[.、．]\s*)?(.{2,100})$/);
-        if (titleMatch && !DIFFICULTY.has(lower) && !/^(?:题目描述|description|相关标签|相关企业|提示|示例|example|给定|请你|输入描述|输出描述|输入|输出|constraints?)(?:\s|$)/i.test(line)) {
+        if (titleMatch && !DIFFICULTY.has(lower) && !/^(?:题目描述|description|相关标签|相关企业|提示|示例|example|给定|请你|输入描述|输出描述|输入|输出|constraints?)/i.test(line)) {
           title = titleMatch[1].replace(/^题目\s*/, '').trim();
           continue;
         }
@@ -63,11 +63,11 @@
       if (/^(?:相关标签|相关话题|topics?|tags?)\s*[:：]?$/i.test(line)) { inTags = true; inCompanies = false; continue; }
       if (/^(?:相关企业|companies)\s*[:：]?$/i.test(line)) { inTags = false; inCompanies = true; continue; }
       if (inCompanies) {
-        if (/^(?:提示|给定|你需要|请你|示例|example|输入|input|constraints?)\b/i.test(line)) inCompanies = false;
+        if (/^(?:提示|给定|你需要|请你|示例|example|输入|input|constraints?)/i.test(line)) inCompanies = false;
         else continue;
       }
       if (inTags) {
-        if (/^(?:premium lock icon|相关企业|提示|给定|你需要|请你|示例|example)\b/i.test(line)) inTags = false;
+        if (/^(?:premium lock icon|相关企业|提示|给定|你需要|请你|示例|example)/i.test(line)) inTags = false;
         else {
           const candidates = line.split(/[，,、|｜\s]+/).map(x => x.trim()).filter(Boolean);
           for (const tag of candidates) if (tag.length <= 24 && !NOISE.has(tag.toLowerCase()) && !tags.includes(tag)) tags.push(tag);
