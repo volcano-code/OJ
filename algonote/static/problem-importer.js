@@ -53,7 +53,7 @@
 
       if (!title) {
         const titleMatch = line.match(/^(?:题目\s*)?(?:\d+\s*[.、．]\s*)?(.{2,100})$/);
-        if (titleMatch && !DIFFICULTY.has(lower) && !/^(?:题目描述|description|相关标签|相关企业|提示|示例|example|给定|请你|输入描述|输出描述|输入|输出|constraints?)\b?/i.test(line)) {
+        if (titleMatch && !DIFFICULTY.has(lower) && !/^(?:题目描述|description|相关标签|相关企业|提示|示例|example|给定|请你|输入描述|输出描述|输入|输出|constraints?)(?:\s|$)/i.test(line)) {
           title = titleMatch[1].replace(/^题目\s*/, '').trim();
           continue;
         }
