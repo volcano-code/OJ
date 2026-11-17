@@ -122,7 +122,7 @@ class ExplanationService:
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": json.dumps(data, ensure_ascii=False)},
             ],
-            "max_tokens": 4096,
+            "max_completion_tokens": 4096,
             "stream": False,
         }
         headers = {"Content-Type": "application/json"}
