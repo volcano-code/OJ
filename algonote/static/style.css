@@ -1865,3 +1865,65 @@ pre {
 .notes-input {
   min-height:100px
 }
+
+/* Pasted problem import */
+.problem-import-panel {
+  display:grid;
+  gap:12px;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:linear-gradient(145deg,#fbfcf9,#f3f6f1);
+}
+.problem-import-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.problem-import-source {
+  width:100%;
+  min-height:180px;
+  font-family:var(--mono);
+  font-size:13px;
+  line-height:1.7;
+  background:#fff;
+}
+.problem-import-preview {
+  display:grid;
+  gap:10px;
+}
+.problem-import-result-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--ink);
+}
+.problem-import-preview:empty { display:none; }
+.problem-import-preview .prose {
+  max-height:440px;
+  overflow:auto;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+.problem-import-preview .prose h2,
+.problem-import-preview .prose h3 {
+  margin:18px 0 8px;
+}
+.problem-import-preview .prose h2:first-child,
+.problem-import-preview .prose h3:first-child { margin-top:0; }
+.problem-import-preview .prose p { line-height:1.9; white-space:pre-wrap; }
+.problem-import-preview .prose pre {
+  padding:13px 15px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#f5f7f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.problem-import-preview .prose ul,
+.problem-import-preview .prose ol { padding-left:1.5rem; }
+.problem-import-preview .prose li { margin:4px 0; }
