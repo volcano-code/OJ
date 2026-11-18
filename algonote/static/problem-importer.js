@@ -63,11 +63,11 @@
       if (/^(?:相关标签|相关话题|topics?|tags?)\s*[:：]?$/i.test(line)) { inTags = true; inCompanies = false; continue; }
       if (/^(?:相关企业|companies)\s*[:：]?$/i.test(line)) { inTags = false; inCompanies = true; continue; }
       if (inCompanies) {
-        if (/^(?:提示|给定|你需要|请你|示例|example|输入|input|constraints?)/i.test(line)) inCompanies = false;
+        if (/^(?:提示|给定|given|description|you are given|你需要|请你|示例|example|输入|input|constraints?)/i.test(line)) inCompanies = false;
         else continue;
       }
       if (inTags) {
-        if (/^(?:premium lock icon|相关企业|提示|给定|你需要|请你|示例|example)/i.test(line)) inTags = false;
+        if (/^(?:premium lock icon|相关企业|提示|给定|given|description|you are given|你需要|请你|示例|example)/i.test(line)) inTags = false;
         else {
           const candidates = line.split(/[，,、|｜\s]+/).map(x => x.trim()).filter(Boolean);
           for (const tag of candidates) if (tag.length <= 24 && !NOISE.has(tag.toLowerCase()) && !tags.includes(tag)) tags.push(tag);
