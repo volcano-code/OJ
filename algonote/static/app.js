@@ -165,7 +165,7 @@
     if (!h.ai?.configured) root.append(el('p', { class: 'service-detail' }, '在服务端配置模型与 API Key 后可生成解析，也可以直接编写自己的题解。'));
   }
   async function refreshHealth() { try { state.health = await api('/health'); } catch (_) { state.health = null; } renderHealth(); }
-  function loading() { app.classList.remove('practice-width'); app.replaceChildren(el('div', { class: 'loading-state' }, el('span', { class: 'spinner' }), el('p', {}, '正在打开…'))); }
+  function loading() { app.classList.remove('practice-width', 'form-wide'); app.replaceChildren(el('div', { class: 'loading-state' }, el('span', { class: 'spinner' }), el('p', {}, '正在打开…'))); }
   function setActiveNav(route) { $('nav-library').classList.toggle('active', route !== 'new' && !route.startsWith('edit/')); $('nav-new').classList.toggle('active', route === 'new' || route.startsWith('edit/')); }
   async function navigate(route, { replace = false, fromHistory = false } = {}) {
     if (state.leaving) return;
@@ -379,6 +379,7 @@
     return Object.fromEntries(keys.map((k) => [k, p[k]]));
   }
   function renderForm(p) {
+    app.classList.add('form-wide');
     const formTicket = state.ticket;
     let formGeneration = 0, savingForm = false;
     let language = p?.references?.python ? 'python' : p?.references?.cpp ? 'cpp' : 'python';
@@ -437,6 +438,39 @@
       el('p', { class: 'field-help' }, '只处理你粘贴的文本，不会访问或抓取官网。原文会保留在上方输入框，整理结果仍可手动修改。'),
       pastedProblem, el('div', { class: 'button-row' }, importButton),
       importPreview);
+    const learningLanguage = select(LANG, 'python', { class: 'learning-language' });
+    const learningResult = el('div', { class: 'learning-result' });
+    const learningCode = codeEditing(el('textarea', { class: 'learning-user-code', placeholder: '可选：先写下自己的思路或代码，AI 会针对你的尝试进行点评。留空则直接从题意开始讲解。' }));
+    const learningButton = button('AI 拆解题目并讲解', 'button-primary', () => busy(learningButton, '正在推导解法…', async () => {
+      if (!title.value.trim()) throw new Error('请先填写题目名称。');
+      if (statement.value.trim().length < 20) throw new Error('请先粘贴完整题目描述（至少 20 个字符）。');
+      const request = { title: title.value.trim(), statement: statement.value, language: learningLanguage.value, user_code: learningCode.value };
+      learningButton.disabled = true;
+      try {
+        const result = await api('/learn', { method: 'POST', body: request });
+        learningResult.replaceChildren(
+          el('div', { class: 'learning-result-head' },
+            el('div', {}, el('h3', {}, 'AI 学习讲解'), el('p', { class: 'field-help' }, `模型：${result.model || '已配置模型'} · ${LANG[result.language] || result.language}`)),
+            badge('已生成', 'mastered')),
+          markdown(result.content));
+        learningResult.dataset.signature = JSON.stringify(request);
+        learningResult.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      } finally { learningButton.disabled = false; }
+    }));
+    const learningPanel = el('section', { class: 'learning-panel' },
+      el('div', { class: 'learning-panel-heading' },
+        el('div', {}, el('p', { class: 'eyebrow' }, 'AI LEARNING STUDIO'), el('h3', {}, '不写参考答案，也能先学会这道题')),
+        badge(state.health?.ai?.configured ? 'OpenAI 已连接' : 'AI 未配置', state.health?.ai?.configured ? 'mastered' : 'review')),
+      el('p', { class: 'field-help' }, '先输入题目描述，选择语言，AI 就会讲解思考过程、算法选择、正确性、复杂度并给出参考实现。无需先保存题目或填写标准答案。'),
+      el('div', { class: 'learning-controls' }, field('参考实现语言', learningLanguage), learningButton),
+      field('我的思路或代码（可选）', learningCode, '留空：从零讲解。填写：AI 会先分析你的思路和代码，再给出建议。'),
+      learningResult);
+    statement.addEventListener('input', () => {
+      if (learningResult.dataset.signature) {
+        learningResult.prepend(notice('题目描述已修改，当前讲解对应旧版本。请重新生成。', 'warning'));
+        delete learningResult.dataset.signature;
+      }
+    });
     const reference = codeEditing(el('textarea', { class: 'form-code', value: refValues[language], 'aria-label': '参考代码', placeholder: '粘贴你在原平台提交的参考答案…' }));
     const template = codeEditing(el('textarea', { class: 'form-code', value: templateValues[language], 'aria-label': '初始代码模板', placeholder: '可选：重做时只显示函数签名和待填写的函数体。', 'data-template': 'true' }));
     const mode = select({ function: '函数模式（Solution / 指定函数）', stdin: '标准输入输出（完整程序）' }, p?.mode || 'function');
@@ -515,7 +549,7 @@
     const runtimeDetails = el('details', { class: 'form-details', open: !!p }, el('summary', {}, '运行方式与测试用例'), el('div', { class: 'form-details-body' }, field('题目执行模式', mode), functionFields, field('结果比较规则', comparison, '例如“两数之和”允许返回下标顺序不同，可选择最外层数组无序比较。'), el('h3', {}, '测试用例'), testHelp, modeNotice, testMount, button('＋ 添加测试', 'button-quiet button-sm mt', () => { addTest(); state.editDirty = true; formGeneration++; })));
     const templateDetails = el('details', { class: 'form-details' }, el('summary', {}, '重做时的初始代码（可选）'), el('div', { class: 'form-details-body' }, el('p', { class: 'field-help' }, '当前语言的空白模板。识别代码时会尝试提取；重做时不会自动填入参考答案。'), template));
     function section(number, name, children) { return el('section', { class: 'form-section' }, el('div', { class: 'form-section-heading' }, el('span', { class: 'step-number' }, number), el('h2', {}, name)), children); }
-    form.append(section('01', '题目内容', [field('题目名称', title, null, true), el('div', { class: 'field-row' }, field('题目来源', source), field('难度', difficulty)), field('原题链接', url), field('算法标签', tags, '用逗号分隔，方便以后按题型查找。'), importPanel, statementField]), section('02', '你的参考答案', [el('div', { class: 'explanation-toolbar' }, langSwitch, infer), el('p', { class: 'field-help' }, '至少填写一种语言的参考代码。保存原始写法，解析会围绕这份答案生成。'), reference, el('div', { class: 'mt' }, inferResult), runtimeDetails, templateDetails]), section('03', '留给下次的笔记', [field('个人笔记', notes), field('掌握状态', mastery)]), errorMount);
+    form.append(section('01', '题目内容', [field('题目名称', title, null, true), el('div', { class: 'field-row' }, field('题目来源', source), field('难度', difficulty)), field('原题链接', url), field('算法标签', tags, '用逗号分隔，方便以后按题型查找。'), importPanel, statementField, learningPanel]), section('02', '你的参考答案', [el('div', { class: 'explanation-toolbar' }, langSwitch, infer), el('p', { class: 'field-help' }, '至少填写一种语言的参考代码。保存原始写法，解析会围绕这份答案生成。'), reference, el('div', { class: 'mt' }, inferResult), runtimeDetails, templateDetails]), section('03', '留给下次的笔记', [field('个人笔记', notes), field('掌握状态', mastery)]), errorMount);
     const save = el('button', { type: 'submit', class: 'button button-primary' }, p ? '保存修改' : '保存题目');
     const saveAside = button(p ? '保存修改' : '保存题目', 'button-primary', () => form.requestSubmit());
     form.append(el('div', { class: 'form-actions' }, button('取消', 'button-quiet', () => navigate(p ? `problem/${p.id}` : 'library')), save));
