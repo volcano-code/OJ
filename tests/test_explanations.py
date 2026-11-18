@@ -144,3 +144,25 @@ def test_bad_server_url_rejected_without_echo(url, problem):
         ExplanationService(url, model="model").generate(problem, "python")
     assert error.value.status_code == 503
     assert "password" not in str(error.value)
+
+
+
+def test_direct_teaching_request_works_without_reference_code(monkeypatch):
+    captured = {}
+
+    def handler(request):
+        body = json.loads(request.content)
+        captured["payload"] = body
+        return httpx.Response(200, json={"choices": [{"message": {"content": "## 关键观察\\n使用哈希表。"}, "finish_reason": "stop"}]})
+
+    transport(monkeypatch, handler)
+    service = ExplanationService("https://api.openai.com/v1", "secret-value", "gpt-5.6-sol")
+    result = service.teach("两数之和", "给定数组和目标值，返回两个下标。", "python")
+    assert "哈希表" in result
+    payload = captured["payload"]
+    assert payload["max_completion_tokens"] == 6144
+    assert payload["messages"][0]["role"] == "system"
+    data = json.loads(payload["messages"][1]["content"])
+    assert data["has_user_code"] is False
+    assert data["language"] == "python"
+    assert "不可信" in payload["messages"][0]["content"]
