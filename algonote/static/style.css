@@ -2117,3 +2117,15 @@ pre {
   .form-wide .form-section { padding:17px; }
   .learning-panel-heading { align-items:flex-start; flex-direction:column; }
 }
+
+.form-section textarea.form-code {
+  display:block;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  box-sizing:border-box;
+}
+@media (min-width: 1001px) {
+  #app.form-wide { width:min(1540px,calc(100% - 56px)); }
+  #app.form-wide .form-layout { grid-template-columns:minmax(0,1fr) 300px; }
+}
