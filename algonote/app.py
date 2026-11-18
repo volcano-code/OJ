@@ -17,7 +17,7 @@ from pydantic import ValidationError
 from . import __version__
 from .explanations import ExplanationError, ExplanationService
 from .inference import infer
-from .models import DraftInput, ExplanationRequest, InferRequest, Language, ManualExplanation, ProblemInput, ProblemUpdate, RunRequest, Settings
+from .models import DraftInput, ExplanationRequest, InferRequest, Language, LearningRequest, ManualExplanation, ProblemInput, ProblemUpdate, RunRequest, Settings
 from .runner import DockerRunner
 from .store import Conflict, NotFound, NotebookSyncError, Store
 
@@ -98,6 +98,20 @@ def create_app(settings: Settings | None = None, *, runner=None, explanation_ser
     @app.get("/api/health")
     def health():
         return {"status": "ok", "version": __version__, "runner": runner.health(), "ai": {"configured": ai.configured, "model": settings.ai_model}, "auth_required": bool(settings.token)}
+
+    @app.post("/api/learn")
+    def learn_from_problem(body: LearningRequest):
+        if not ai.configured:
+            raise HTTPException(503, "AI 服务尚未配置，请检查 ALGONOTE_AI_BASE_URL 与 ALGONOTE_AI_MODEL，并重启服务")
+        if not ai_slots.acquire(blocking=False):
+            raise HTTPException(429, "已有 AI 学习请求正在处理，请稍后再试")
+        try:
+            content = ai.teach(body.title, body.statement, body.language, body.user_code)
+            if not content.strip() or len(content) > 100_000:
+                raise HTTPException(502, "模型返回的学习内容为空或过长，请重试")
+            return {"content": content, "language": body.language, "model": settings.ai_model}
+        finally:
+            ai_slots.release()
 
     @app.get("/api/problems")
     def list_problems(q: str = "", source: str = "", tag: str = "", mastery: str = ""):
