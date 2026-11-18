@@ -2003,3 +2003,102 @@ pre {
 @media (max-width:1000px) {
   .form-code { min-height:300px; }
 }
+
+/* Wider problem authoring and first-class AI learning workspace */
+#app.form-wide {
+  width:min(1500px,calc(100% - 72px));
+}
+.form-wide .form-layout {
+  grid-template-columns:minmax(0,1fr) 290px;
+  gap:28px;
+}
+.form-wide .form-main,
+.form-wide .form-section,
+.form-wide .form-section>.field,
+.form-wide .form-section .field {
+  min-width:0;
+}
+.form-wide .form-code {
+  display:block;
+  width:100%;
+  min-width:0;
+  min-height:440px;
+  resize:vertical;
+  font-size:13px;
+  line-height:1.65;
+  white-space:pre;
+  overflow:auto;
+}
+.form-wide .form-code[data-template=true] {
+  min-height:220px;
+}
+.learning-panel {
+  display:grid;
+  gap:15px;
+  margin-top:24px;
+  padding:22px;
+  border:1px solid #dce8dc;
+  border-radius:14px;
+  background:linear-gradient(145deg,#f7faf6,#eef5ef);
+  min-width:0;
+}
+.learning-panel-heading,
+.learning-result-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.learning-panel-heading h3,
+.learning-result-head h3 {
+  margin:0 0 4px;
+}
+.learning-controls {
+  display:grid;
+  grid-template-columns:minmax(180px,260px) minmax(220px,1fr);
+  align-items:end;
+  gap:16px;
+}
+.learning-controls .field { margin:0; }
+.learning-controls .button { min-height:42px; }
+.learning-user-code {
+  display:block;
+  width:100%;
+  min-height:110px;
+  font-family:var(--mono);
+  font-size:12px;
+}
+.learning-result {
+  display:grid;
+  gap:14px;
+  min-width:0;
+}
+.learning-result:empty { display:none; }
+.learning-result>.prose {
+  max-height:none;
+  overflow:visible;
+  padding:24px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+}
+.learning-result .prose h2 {
+  margin:24px 0 10px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--line);
+  font-size:19px;
+}
+.learning-result .prose h2:first-child { margin-top:0; }
+.learning-result .prose h3 { margin:18px 0 8px; }
+.learning-result .prose p { line-height:1.9; white-space:pre-wrap; }
+.learning-result .prose pre {
+  padding:16px;
+  border-radius:9px;
+  background:#f3f6f2;
+  border:1px solid var(--line);
+  overflow:auto;
+  white-space:pre;
+}
+.learning-result .prose ul,
+.learning-result .prose ol { padding-left:1.5rem; }
+.learning-result .prose li { margin:5px 0; }
