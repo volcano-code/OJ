@@ -32,6 +32,30 @@ assert.match(leetcode.statement, /### 示例 1/);
 assert.match(leetcode.statement, /\*\*输入：\*\*/);
 assert.doesNotMatch(leetcode.statement, /premium lock icon|相关企业/);
 
+const english = parse(`1. Two Sum
+Easy
+Topics
+Array Hash Table
+Companies
+premium lock icon
+
+Description
+
+Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.
+
+Example 1:
+Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+
+Constraints:
+2 <= nums.length <= 10^4`, 'leetcode');
+assert.equal(english.title, 'Two Sum');
+assert.equal(english.difficulty, 'easy');
+assert.match(english.statement, /Given an array of integers/);
+assert.match(english.statement, /### 示例 1/);
+assert.match(english.statement, /Constraints:/);
+assert.doesNotMatch(english.statement, /premium lock icon|Companies/);
+
 const nowcoder = parse(`题目描述
 给定 n 个整数，请输出它们的和。
 输入描述：
