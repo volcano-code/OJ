@@ -22,8 +22,14 @@ premium lock icon
 输出：[0,1]
 解释：因为 nums[0] + nums[1] == 9，返回 [0, 1]。
 
+示例 2：
+输入：nums = [3,2,4], target = 6
+输出：[1,2]
+
 提示：
-2 <= nums.length <= 10^4`, 'leetcode');
+2 <= nums.length <= 10^4
+
+进阶：你可以想出一个时间复杂度小于 O(n²) 的算法吗？`, 'leetcode');
 assert.equal(leetcode.title, '两数之和');
 assert.equal(leetcode.difficulty, 'easy');
 assert.deepEqual(Array.from(leetcode.tags), ['数组', '哈希表']);
