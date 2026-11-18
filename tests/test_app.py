@@ -63,6 +63,10 @@ class FakeAI:
         return "## 核心思路\n逐个检查，解释基于用户参考代码。\n\n## 复杂度\n以实际代码为准。"
 
 
+    def teach(self, title, statement, language="python", user_code=""):
+        self.calls.append(("teach", title, statement, language, user_code))
+        return "## 关键观察\\n先建立哈希表。"
+
 @pytest.fixture
 def setup(tmp_path):
     settings = Settings(data_dir=str(tmp_path / "data"), notebook_dir=str(tmp_path / "notebook"))
@@ -167,6 +171,33 @@ def test_no_tests_and_infrastructure_failure_do_not_claim_judgement(setup):
     response = client.post(f"/api/problems/{p['id']}/run", json={"language": "python", "code": "submitted", "revision": 1})
     assert response.json()["status"] == "infrastructure_error"
     assert "provider internal failure" not in response.text
+
+
+def test_direct_ai_learning_works_before_problem_is_saved(setup):
+    client, settings, runner, ai, store = setup
+    response = client.post("/api/learn", json={
+        "title": "两数之和",
+        "statement": "给定整数数组 nums 和目标值 target，请返回两个数的下标。约束：答案唯一。",
+        "language": "python",
+    })
+    assert response.status_code == 200, response.text
+    assert response.json()["language"] == "python"
+    assert "关键观察" in response.json()["content"]
+    assert ai.calls[-1][0] == "teach"
+    assert client.get("/api/problems").json()["total"] == 0
+
+
+def test_direct_ai_learning_can_review_user_attempt(setup):
+    client, settings, runner, ai, store = setup
+    response = client.post("/api/learn", json={
+        "title": "两数之和",
+        "statement": "给定整数数组 nums 和目标值 target，返回满足条件的两个下标。",
+        "language": "cpp",
+        "user_code": "class Solution {};",
+    })
+    assert response.status_code == 200
+    assert ai.calls[-1][3] == "cpp"
+    assert ai.calls[-1][4] == "class Solution {};"
 
 
 def test_ai_is_explicit_persisted_and_stale_after_code_or_test_changes(setup):
