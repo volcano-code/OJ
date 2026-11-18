@@ -2102,3 +2102,18 @@ pre {
 .learning-result .prose ul,
 .learning-result .prose ol { padding-left:1.5rem; }
 .learning-result .prose li { margin:5px 0; }
+
+@media (max-width: 1000px) {
+  #app.form-wide { width:calc(100% - 36px); }
+  .form-wide .form-layout { grid-template-columns:minmax(0,1fr); }
+  .form-wide .form-aside { position:static; }
+  .form-wide .form-code { min-height:320px; }
+  .learning-controls { grid-template-columns:minmax(0,1fr); }
+  .learning-panel { padding:17px; }
+  .learning-result>.prose { padding:18px; }
+}
+@media (max-width: 560px) {
+  #app.form-wide { width:calc(100% - 20px); }
+  .form-wide .form-section { padding:17px; }
+  .learning-panel-heading { align-items:flex-start; flex-direction:column; }
+}
