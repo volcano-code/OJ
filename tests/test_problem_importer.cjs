@@ -62,7 +62,7 @@ assert.equal(english.title, 'Two Sum');
 assert.equal(english.difficulty, 'easy');
 assert.match(english.statement, /Given an array of integers/);
 assert.match(english.statement, /### 示例 1/);
-assert.match(english.statement, /Constraints:/);
+assert.match(english.statement, /### 提示/);\nassert.match(english.statement, /2 <= nums\\.length/);
 assert.doesNotMatch(english.statement, /premium lock icon|Companies/);
 
 const nowcoder = parse(`题目描述
