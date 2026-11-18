@@ -1927,3 +1927,79 @@ pre {
 .problem-import-preview .prose ul,
 .problem-import-preview .prose ol { padding-left:1.5rem; }
 .problem-import-preview .prose li { margin:4px 0; }
+
+/* Wider desktop authoring workspace and readable problem editing */
+@media (min-width: 1001px) {
+  #app { width:min(1480px,calc(100% - 64px)); }
+  .form-layout { grid-template-columns:minmax(0,1fr) 290px; gap:28px; }
+}
+.form-code {
+  display:block;
+  width:100%;
+  min-width:0;
+  min-height:340px;
+  font-size:13px;
+  line-height:1.65;
+}
+.statement-editor { display:grid; gap:10px; }
+.statement-editor-toolbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.statement-preview {
+  min-height:220px;
+  max-height:680px;
+  overflow:auto;
+  padding:24px 28px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  font-size:15px;
+  line-height:1.95;
+}
+.statement-preview h1,
+.statement-preview h2,
+.statement-preview h3 {
+  color:var(--ink);
+  letter-spacing:-.01em;
+}
+.statement-preview h2 {
+  padding-bottom:8px;
+  border-bottom:1px solid var(--line);
+}
+.statement-preview pre {
+  overflow:auto;
+  padding:16px 18px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#f5f7f4;
+  white-space:pre;
+}
+.statement-preview code {
+  font-family:var(--mono);
+}
+.statement-preview blockquote {
+  border-left:3px solid var(--teal);
+  margin:14px 0;
+  padding:8px 16px;
+  background:#f6f8f4;
+}
+.ai-next-step {
+  display:grid;
+  gap:8px;
+  margin-top:16px;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#f7faf6;
+}
+.ai-next-step .badge { width:max-content; }
+.ai-next-step p { margin:0; }
+.problem-import-source { min-height:150px; }
+.problem-import-preview .prose { max-height:none; }
+@media (max-width:1000px) {
+  .form-code { min-height:300px; }
+}
