@@ -158,6 +158,20 @@ class ExplanationRequest(BaseModel):
     revision: int = Field(ge=1)
 
 
+class LearningRequest(BaseModel):
+    title: str = Field(default="", max_length=160)
+    statement: str = Field(min_length=20, max_length=100_000)
+    language: Language = "python"
+    user_code: str = Field(default="", max_length=60_000)
+
+    @field_validator("title", "statement")
+    @classmethod
+    def trim_learning_text(cls, value: str, info) -> str:
+        if info.field_name == "statement" and not value.strip():
+            raise ValueError("请先粘贴完整题目描述")
+        return value.strip()
+
+
 class ManualExplanation(BaseModel):
     content: str = Field(min_length=1, max_length=200_000)
     revision: int = Field(ge=1)
