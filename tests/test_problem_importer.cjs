@@ -45,5 +45,5 @@ const nowcoder = parse(`题目描述
 6`, 'nowcoder');
 assert.notEqual(nowcoder.title, '题目描述');
 assert.match(nowcoder.statement, /输入描述/);
-assert.match(nowcoder.statement, /输出描述/);
+assert.match(nowcoder.statement, /输出描述/);\nassert.match(nowcoder.statement, /给定 n 个整数/);\nassert.match(nowcoder.statement, /3/);
 console.log('problem importer tests passed');
