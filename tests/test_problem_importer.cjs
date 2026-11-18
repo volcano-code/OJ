@@ -37,6 +37,9 @@ assert.match(leetcode.statement, /给定一个整数数组/);
 assert.match(leetcode.statement, /### 示例 1/);
 assert.match(leetcode.statement, /\*\*输入：\*\*/);
 assert.doesNotMatch(leetcode.statement, /premium lock icon|相关企业/);
+assert.match(leetcode.statement, /示例 2/);
+assert.match(leetcode.statement, /进阶/);
+assert.match(leetcode.statement, /2 <= nums\\.length/);
 
 const english = parse(`1. Two Sum
 Easy
@@ -75,5 +78,7 @@ const nowcoder = parse(`题目描述
 6`, 'nowcoder');
 assert.notEqual(nowcoder.title, '题目描述');
 assert.match(nowcoder.statement, /输入描述/);
-assert.match(nowcoder.statement, /输出描述/);\nassert.match(nowcoder.statement, /给定 n 个整数/);\nassert.match(nowcoder.statement, /3/);
+assert.match(nowcoder.statement, /输出描述/);
+assert.match(nowcoder.statement, /给定 n 个整数/);
+assert.match(nowcoder.statement, /3/);
 console.log('problem importer tests passed');
