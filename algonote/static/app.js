@@ -390,6 +390,23 @@
     const url = el('input', { type: 'url', value: p?.source_url || '', placeholder: 'https://leetcode.cn/problems/…' });
     const tags = el('input', { type: 'text', value: (p?.tags || []).join('，'), placeholder: '哈希表，数组' });
     const statement = el('textarea', { class: 'statement-input', value: p?.statement || '', placeholder: '粘贴整理后的题目描述。支持 Markdown。', required: true });
+    const statementPreview = el('div', { class: 'statement-preview prose', hidden: true });
+    const statementEditor = el('div', { class: 'statement-editor' });
+    const editStatement = button('编辑 Markdown', 'button-quiet button-sm', () => {
+      statementPreview.hidden = true; statement.hidden = false;
+    });
+    const previewStatement = button('阅读预览', 'button-secondary button-sm', () => {
+      statementPreview.replaceChildren(markdown(statement.value));
+      statement.hidden = true; statementPreview.hidden = false;
+    });
+    statementEditor.append(el('div', { class: 'statement-editor-toolbar' },
+      el('span', { class: 'field-help' }, '支持标题、列表、代码块与行内代码'),
+      el('div', { class: 'button-row' }, editStatement, previewStatement)),
+      statement, statementPreview);
+    const statementField = el('div', { class: 'field statement-field' },
+      el('label', { class: 'field-label' }, '题目描述（支持 Markdown）', el('span', { class: 'required' }, ' *')),
+      statementEditor,
+      el('p', { class: 'field-help' }, '导入后可切换到阅读预览检查排版；需要修改时切回 Markdown 编辑。'));
     const pastedProblem = el('textarea', { class: 'problem-import-source', placeholder: '从 LeetCode 或牛客复制完整题目内容，粘贴到这里。支持包含标题、难度、标签、题目描述、示例和提示的文本。' });
     const importPreview = el('div', { class: 'problem-import-preview' });
     const importButton = button('智能整理粘贴内容', 'button-secondary', () => {
@@ -406,8 +423,12 @@
           el('strong', {}, parsed.title || '题目标题待确认'),
           badge(parsed.statement ? '已提取正文' : '需要检查', parsed.statement ? 'mastered' : 'review')),
         notes.length ? notice(notes.join('\n'), 'warning') : notice('已完成本地整理。请核对标题、标签、示例、约束和公式后再保存。'),
-        parsed.statement ? markdown(parsed.statement) : notice('没有提取到正文，请检查原文。', 'warning'));
-      if (parsed.statement) state.editDirty = true;
+        parsed.statement ? el('p', { class: 'field-help no-margin' }, `已提取正文 ${parsed.statement.length} 个字符。下方题目描述已切换为阅读预览，请核对后保存。`) : notice('没有提取到正文，请检查原文。', 'warning'));
+      if (parsed.statement) {
+        state.editDirty = true;
+        statementPreview.replaceChildren(markdown(statement.value));
+        statement.hidden = true; statementPreview.hidden = false;
+      }
       formGeneration++;
       importPreview.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
@@ -494,7 +515,7 @@
     const runtimeDetails = el('details', { class: 'form-details', open: !!p }, el('summary', {}, '运行方式与测试用例'), el('div', { class: 'form-details-body' }, field('题目执行模式', mode), functionFields, field('结果比较规则', comparison, '例如“两数之和”允许返回下标顺序不同，可选择最外层数组无序比较。'), el('h3', {}, '测试用例'), testHelp, modeNotice, testMount, button('＋ 添加测试', 'button-quiet button-sm mt', () => { addTest(); state.editDirty = true; formGeneration++; })));
     const templateDetails = el('details', { class: 'form-details' }, el('summary', {}, '重做时的初始代码（可选）'), el('div', { class: 'form-details-body' }, el('p', { class: 'field-help' }, '当前语言的空白模板。识别代码时会尝试提取；重做时不会自动填入参考答案。'), template));
     function section(number, name, children) { return el('section', { class: 'form-section' }, el('div', { class: 'form-section-heading' }, el('span', { class: 'step-number' }, number), el('h2', {}, name)), children); }
-    form.append(section('01', '题目内容', [field('题目名称', title, null, true), el('div', { class: 'field-row' }, field('题目来源', source), field('难度', difficulty)), field('原题链接', url), field('算法标签', tags, '用逗号分隔，方便以后按题型查找。'), importPanel, field('题目描述（可继续编辑）', statement, '整理后可在这里修正 Markdown、示例与约束。', true)]), section('02', '你的参考答案', [el('div', { class: 'explanation-toolbar' }, langSwitch, infer), el('p', { class: 'field-help' }, '至少填写一种语言的参考代码。保存原始写法，解析会围绕这份答案生成。'), reference, el('div', { class: 'mt' }, inferResult), runtimeDetails, templateDetails]), section('03', '留给下次的笔记', [field('个人笔记', notes), field('掌握状态', mastery)]), errorMount);
+    form.append(section('01', '题目内容', [field('题目名称', title, null, true), el('div', { class: 'field-row' }, field('题目来源', source), field('难度', difficulty)), field('原题链接', url), field('算法标签', tags, '用逗号分隔，方便以后按题型查找。'), importPanel, statementField]), section('02', '你的参考答案', [el('div', { class: 'explanation-toolbar' }, langSwitch, infer), el('p', { class: 'field-help' }, '至少填写一种语言的参考代码。保存原始写法，解析会围绕这份答案生成。'), reference, el('div', { class: 'mt' }, inferResult), runtimeDetails, templateDetails]), section('03', '留给下次的笔记', [field('个人笔记', notes), field('掌握状态', mastery)]), errorMount);
     const save = el('button', { type: 'submit', class: 'button button-primary' }, p ? '保存修改' : '保存题目');
     const saveAside = button(p ? '保存修改' : '保存题目', 'button-primary', () => form.requestSubmit());
     form.append(el('div', { class: 'form-actions' }, button('取消', 'button-quiet', () => navigate(p ? `problem/${p.id}` : 'library')), save));
@@ -545,7 +566,7 @@
     })); });
     for (const test of p?.tests || []) addTest(test);
     updateMode();
-    app.replaceChildren(breadcrumb(p ? '编辑题目' : '录入题目'), el('div', { class: 'page-heading' }, el('div', {}, el('p', { class: 'eyebrow' }, p ? 'KEEP YOUR THINKING' : 'ONE PROBLEM AT A TIME'), el('h1', {}, p ? '完善这道题的手记' : '留下一道值得再做的题'), el('p', { class: 'hero-copy' }, '保存题目与自己的解法，给下次练习做好准备。'))), el('div', { class: 'form-layout' }, el('div', { class: 'form-main' }, form), el('aside', { class: 'form-aside' }, el('div', { class: 'panel' }, el('h3', {}, '简单录入，完整保留'), el('p', {}, '题目与参考代码是这份手记的起点。测试与模板可以现在补充，也可以以后完善。'), saveAside, el('div', { class: 'aside-tip' }, '建议录入顺序', el('ol', { class: 'help-list' }, el('li', {}, '粘贴题目与数据范围'), el('li', {}, '粘贴自己的参考代码'), el('li', {}, '识别函数，填写样例'), el('li', {}, '保存后生成思路解析')))))));
+    app.replaceChildren(breadcrumb(p ? '编辑题目' : '录入题目'), el('div', { class: 'page-heading' }, el('div', {}, el('p', { class: 'eyebrow' }, p ? 'KEEP YOUR THINKING' : 'ONE PROBLEM AT A TIME'), el('h1', {}, p ? '完善这道题的手记' : '留下一道值得再做的题'), el('p', { class: 'hero-copy' }, '保存题目与自己的解法，给下次练习做好准备。'))), el('div', { class: 'form-layout' }, el('div', { class: 'form-main' }, form), el('aside', { class: 'form-aside' }, el('div', { class: 'panel' }, el('h3', {}, '简单录入，完整保留'), el('p', {}, '题目与参考代码是这份手记的起点。测试与模板可以现在补充，也可以以后完善。'), el('div', { class: 'ai-next-step' }, badge(state.health?.ai?.configured ? 'OpenAI 已配置' : 'AI 待配置', state.health?.ai?.configured ? 'mastered' : 'review'), el('p', {}, 'AI 题解在保存题目后生成：进入题目详情 → 思路解析 → 生成中文题解。若仍显示待配置，请检查 .env 并重启服务。')), saveAside, el('div', { class: 'aside-tip' }, '建议录入顺序', el('ol', { class: 'help-list' }, el('li', {}, '粘贴题目与数据范围'), el('li', {}, '粘贴自己的参考代码'), el('li', {}, '识别函数，填写样例'), el('li', {}, '保存后生成思路解析')))))));
     state.editDirty = false;
   }
 
