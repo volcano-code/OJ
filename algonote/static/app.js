@@ -119,19 +119,36 @@
     const parts = String(text).split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
     for (const part of parts) {
       if (part.startsWith('`') && part.endsWith('`')) parent.append(el('code', {}, part.slice(1, -1)));
-      else if (part.startsWith('**') && part.endsWith('**')) parent.append(el('strong', {}, part.slice(2, -2)));
+      else if (part.startsWith('**') && part.endsWith('**')) parent.append(inlineText(el('strong'), part.slice(2, -2)));
+      else if (window.AlgoNoteMath) window.AlgoNoteMath.appendInline(parent, part);
       else parent.append(document.createTextNode(part));
     }
     return parent;
   }
+  function mathBlock(text) {
+    const block = el('div', { class: 'math-display-block' });
+    if (window.AlgoNoteMath) window.AlgoNoteMath.renderDisplay(block, text);
+    else block.append(el('pre', {}, text));
+    return block;
+  }
   function markdown(text) {
     const container = el('div', { class: 'prose' });
     const lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
-    let paragraph = [], code = null, list = null;
+    let paragraph = [], code = null, list = null, displayMath = null, displayEnd = null;
     const flush = () => { if (paragraph.length) container.append(inlineText(el('p'), paragraph.join('\n'))); paragraph = []; list = null; };
     for (const line of lines) {
       if (/^\s*```/.test(line)) { if (code !== null) { container.append(el('pre', {}, code.join('\n'))); code = null; } else { flush(); code = []; } continue; }
       if (code !== null) { code.push(line); continue; }
+      if (displayMath !== null) {
+        if (line.trim() === displayEnd) { container.append(mathBlock(displayMath.join('\n'))); displayMath = null; displayEnd = null; }
+        else displayMath.push(line);
+        continue;
+      }
+      const displayLine = line.match(/^\s*\$\$(.+)\$\$\s*$/);
+      if (displayLine) { flush(); container.append(mathBlock(displayLine[1].trim())); continue; }
+      if (line.trim() === '$' || line.trim() === '\\[') {
+        flush(); displayMath = []; displayEnd = line.trim() === '$' ? '$' : '\\]'; continue;
+      }
       const heading = line.match(/^(#{1,4})\s+(.+)$/);
       const bullet = line.match(/^\s*[-*+]\s+(.+)$/);
       const number = line.match(/^\s*\d+[.)]\s+(.+)$/);
@@ -146,6 +163,7 @@
       else { list = null; paragraph.push(line); }
     }
     if (code !== null) container.append(el('pre', {}, code.join('\n')));
+    if (displayMath !== null) container.append(mathBlock(displayMath.join('\n')));
     flush();
     return container;
   }
