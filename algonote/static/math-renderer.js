@@ -18,26 +18,26 @@
     exists: '∃', neg: '¬', land: '∧', lor: '∨'
   });
 
-  const TERM = String.raw`[A-Za-z_]\\w*(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?(?:\\[[^\\]]+\\])?`;
-  const POWER = String.raw`-?\\d+\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+)`;
-  const COMPLEXITY = String.raw`\\bO\\(\\s*[A-Za-z][A-Za-z0-9]*(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?\\s*\\)`;
-  const CHAINED = String.raw`-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?\\s*(?:<=|>=|<|>|==|!=)\\s*[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)?(?:\\[[^\\]]+\\])?(?:\\s*(?:<=|>=|<|>|==|!=)\\s*-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?)?`;
-  const COMPARISON = String.raw`(?:[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)?(?:\\[[^\\]]+\\])?)\\s*(?:==|!=|<=|>=|=|<|>)\\s*-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?`;
-  const ARITHMETIC = String.raw`${TERM}(?:\\s*[+*/-]\\s*${TERM})+\\s*(?:==|!=|<=|>=|=|<|>)\\s*(?:-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?|${TERM})`;
-  const MATH_PATTERN = new RegExp(`(?:${COMPLEXITY})|(?:${CHAINED})|(?:${ARITHMETIC})|(?:${COMPARISON})|(?:\\b${POWER})`, 'g');
+  const TERM = '[A-Za-z_]\\w*(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?(?:\\[[^\\]]+\\])?';
+  const POWER = '-?\\d+\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+)';
+  const COMPLEXITY = '\\bO\\(\\s*[A-Za-z][A-Za-z0-9]*(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?\\s*\\)';
+  const CHAINED = '-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?\\s*(?:<=|>=|<|>|==|!=)\\s*[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)?(?:\\[[^\\]]+\\])?(?:\\s*(?:<=|>=|<|>|==|!=)\\s*-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?)?';
+  const COMPARISON = '(?:[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)?(?:\\[[^\\]]+\\])?)\\s*(?:==|!=|<=|>=|=|<|>)\\s*-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?';
+  const ARITHMETIC = TERM + '(?:\\s*[+*/-]\\s*' + TERM + ')+\\s*(?:==|!=|<=|>=|=|<|>)\\s*(?:-?\\d+(?:\\s*\\^\\s*(?:\\{[^}]+\\}|-?\\d+))?|' + TERM + ')';
+  const MATH_PATTERN = new RegExp('(?:' + COMPLEXITY + ')|(?:' + CHAINED + ')|(?:' + ARITHMETIC + ')|(?:' + COMPARISON + ')|(?:\\b' + POWER + ')', 'g');
 
   function normalizeMath(source) {
     return String(source)
-      .replace(/\\bO\\(\\s*([a-z])([2-9])\\s*\\)/gi, 'O($1^$2)')
-      .replace(/\\s*<=\\s*/g, ' ≤ ')
-      .replace(/\\s*>=\\s*/g, ' ≥ ')
-      .replace(/\\s*!=\\s*/g, ' ≠ ')
-      .replace(/\\s*==\\s*/g, ' = ')
-      .replace(/\\s*->\\s*/g, ' → ');
+      .replace(/\bO\(\s*([a-z])([2-9])\s*\)/gi, 'O($1^$2)')
+      .replace(/\s*<=\s*/g, ' ≤ ')
+      .replace(/\s*>=\s*/g, ' ≥ ')
+      .replace(/\s*!=\s*/g, ' ≠ ')
+      .replace(/\s*==\s*/g, ' = ')
+      .replace(/\s*->\s*/g, ' → ');
   }
 
   function readArgument(source, index) {
-    while (/\\s/.test(source[index] || '') && index < source.length) index += 1;
+    while (index < source.length && /\s/.test(source[index])) index += 1;
     if (index >= source.length) return { value: '', next: index };
     if (source[index] !== '{') return { value: source[index], next: index + 1 };
     let depth = 1;
@@ -158,7 +158,7 @@
 
   function appendInline(parent, source) {
     const text = String(source);
-    const tokenPattern = /\\$[^$\\n]+\\$|\\\\\\([^\\n]+?\\\\\\)/g;
+    const tokenPattern = /\$[^$\n]+\$|\\\([^\n]+?\\\)/g;
     let match;
     let offset = 0;
     while ((match = tokenPattern.exec(text))) {
