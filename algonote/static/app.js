@@ -146,8 +146,8 @@
       }
       const displayLine = line.match(/^\s*\$\$(.+)\$\$\s*$/);
       if (displayLine) { flush(); container.append(mathBlock(displayLine[1].trim())); continue; }
-      if (line.trim() === '$' || line.trim() === '\\[') {
-        flush(); displayMath = []; displayEnd = line.trim() === '$' ? '$' : '\\]'; continue;
+      if (line.trim() === '$$' || line.trim() === '\\[') {
+        flush(); displayMath = []; displayEnd = line.trim() === '$$' ? '$$' : '\\]'; continue;
       }
       const heading = line.match(/^(#{1,4})\s+(.+)$/);
       const bullet = line.match(/^\s*[-*+]\s+(.+)$/);
