@@ -21,7 +21,9 @@ jobs:
         run: |
           node --check algonote/static/app.js
           node --check algonote/static/problem-importer.js
+          node --check algonote/static/math-renderer.js
           node tests/test_problem_importer.cjs
+          node tests/test_math_renderer.cjs
       - name: Build isolated runner
         run: python -m algonote prepare-runner
       - name: Test local deployment diagnostics
