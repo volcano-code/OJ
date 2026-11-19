@@ -61,12 +61,7 @@ assert.equal(fraction.find('span').filter(node => node.className === 'math-fract
 assert.equal(fraction.find('sup').length, 1);
 assert.ok(fraction.find('span').some(node => node.className === 'math-display'));
 
-const safe = renderInline('$\\text{<img src=x onerror=alert(1)>}
-assert.equal(safe.find('img').length, 0);
-assert.match(safe.textContent, /<img src=x/);
-
-console.log('math renderer tests passed');
-);
+const safe = renderInline("$\\text{<img src=x onerror=alert(1)>}$");
 assert.equal(safe.find('img').length, 0);
 assert.match(safe.textContent, /<img src=x/);
 
