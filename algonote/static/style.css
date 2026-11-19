@@ -2129,3 +2129,72 @@ pre {
   #app.form-wide { width:min(1540px,calc(100% - 56px)); }
   #app.form-wide .form-layout { grid-template-columns:minmax(0,1fr) 300px; }
 }
+
+/* Mathematical notation: semantic superscripts, subscripts, fractions and display blocks. */
+.math-inline,
+.math-display {
+  font-family:"Cambria Math","STIX Two Math","DejaVu Serif","Times New Roman",serif;
+  font-style:italic;
+  font-variant-numeric:lining-nums;
+  letter-spacing:.01em;
+  color:#263b32;
+}
+.math-inline {
+  display:inline;
+  white-space:nowrap;
+  font-size:1.04em;
+  padding:0 .04em;
+}
+.math-inline sup,
+.math-inline sub,
+.math-display sup,
+.math-display sub {
+  font-size:.72em;
+  line-height:0;
+  position:relative;
+  vertical-align:baseline;
+  font-style:normal;
+}
+.math-inline sup,
+.math-display sup { top:-.42em; }
+.math-inline sub,
+.math-display sub { bottom:-.14em; }
+.math-upright { font-style:normal; }
+.math-fraction {
+  display:inline-grid;
+  grid-template-rows:auto auto;
+  vertical-align:middle;
+  text-align:center;
+  font-size:.82em;
+  line-height:1.1;
+  margin:0 .12em;
+}
+.math-numerator {
+  display:block;
+  padding:0 .2em .12em;
+  border-bottom:1px solid currentColor;
+}
+.math-denominator { display:block; padding:.12em .2em 0; }
+.math-root { display:inline-flex; align-items:baseline; }
+.math-radicand { border-top:1px solid currentColor; padding:0 .12em; }
+.math-display-block {
+  display:block;
+  margin:18px auto;
+  padding:14px 18px;
+  overflow-x:auto;
+  text-align:center;
+  border:1px solid #e4e9e2;
+  border-radius:9px;
+  background:#fafbf9;
+}
+.math-display {
+  display:inline-block;
+  white-space:nowrap;
+  font-size:1.2em;
+  line-height:1.8;
+}
+.prose .math-inline { vertical-align:baseline; }
+.prose .math-display-block + p { margin-top:12px; }
+.statement-preview .math-display-block,
+.problem-import-preview .math-display-block,
+.learning-result .math-display-block { max-width:100%; }
