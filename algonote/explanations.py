@@ -87,7 +87,7 @@ LEARNING_SYSTEM_PROMPT = """你是一位耐心、严谨的中文算法导师。�
 
 
 def _extract_learning_text(body: Any) -> str:
-    """Extract text from Chat Completions, including block-style content payloads."""
+    """Extract assistant text from Chat Completions or compatible gateway responses."""
     if not isinstance(body, dict):
         raise ExplanationError("AI 服务返回的 JSON 顶层不是对象，无法读取学习结果。", 502)
 
@@ -115,10 +115,8 @@ def _extract_learning_text(body: Any) -> str:
             for block in content:
                 if isinstance(block, str):
                     parts.append(block)
-                elif isinstance(block, dict):
-                    value = block.get("text")
-                    if isinstance(value, str) and value.strip():
-                        parts.append(value)
+                elif isinstance(block, dict) and isinstance(block.get("text"), str):
+                    parts.append(block["text"])
             text = "\n".join(parts).strip()
             if text:
                 return text
@@ -129,8 +127,7 @@ def _extract_learning_text(body: Any) -> str:
             502,
         )
 
-    # Some OpenAI-compatible gateways return the Responses API envelope even
-    # when configured with a Chat Completions endpoint.
+    # Some OpenAI-compatible gateways return a Responses-style envelope.
     output_text = body.get("output_text")
     if isinstance(output_text, str) and output_text.strip():
         return output_text.strip()
@@ -138,13 +135,11 @@ def _extract_learning_text(body: Any) -> str:
     if isinstance(output, list):
         parts = []
         for item in output:
-            if not isinstance(item, dict):
+            if not isinstance(item, dict) or not isinstance(item.get("content"), list):
                 continue
-            blocks = item.get("content")
-            if isinstance(blocks, list):
-                for block in blocks:
-                    if isinstance(block, dict) and isinstance(block.get("text"), str):
-                        parts.append(block["text"])
+            for block in item["content"]:
+                if isinstance(block, dict) and isinstance(block.get("text"), str):
+                    parts.append(block["text"])
         text = "\n".join(parts).strip()
         if text:
             return text
@@ -236,6 +231,68 @@ class ExplanationService:
                         size += len(chunk)
                         if size > 1024 * 1024:
                             raise ExplanationError("AI 服务返回内容过长，已停止接收。", 502)
+                        chunks.append(chunk)
+            body = json.loads(b"".join(chunks))
+            choice = body["choices"][0]
+            if choice.get("finish_reason") == "length":
+                raise ExplanationError("AI 题解达到输出长度上限，未保存不完整内容。可以精简参考资料后重新生成。", 502)
+            content = choice["message"]["content"]
+            if not isinstance(content, str) or not content.strip():
+                raise ValueError("Missing text")
+            if len(content) > 30000:
+                raise ExplanationError("AI 题解过长，未保存，请缩小输入范围后重试。", 502)
+            return content.strip()
+        except ExplanationError:
+            raise
+        except httpx.TimeoutException:
+            raise ExplanationError("AI 生成超时，尚未保存新题解，请稍后重试。", 504) from None
+        except httpx.RequestError:
+            raise ExplanationError("暂时无法连接 AI 服务，请检查服务端网络和服务地址。", 503) from None
+        except (ValueError, KeyError, IndexError, TypeError):
+            raise ExplanationError("AI 服务返回格式不兼容，未保存新题解。请使用支持 Chat Completions 的接口。", 502) from None
+
+    def teach(self, title: str, statement: str, language: str = "python", user_code: str = "") -> str:
+        endpoint = self._endpoint()
+        if language not in {"cpp", "python"}:
+            raise ExplanationError("只支持 C++ 与 Python。", 422)
+        if not statement.strip():
+            raise ExplanationError("请先提供题目描述。", 422)
+        if len(statement) > 100_000 or len(user_code) > 60_000:
+            raise ExplanationError("题面或个人代码超过本次 AI 学习请求的长度限制。", 422)
+        data = {
+            "title": title[:160],
+            "statement": statement,
+            "language": language,
+            "user_code": user_code,
+            "has_user_code": bool(user_code.strip()),
+        }
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": LEARNING_SYSTEM_PROMPT},
+                {"role": "user", "content": json.dumps(data, ensure_ascii=False)},
+            ],
+            "max_completion_tokens": 8192,
+            "stream": False,
+        }
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        try:
+            with httpx.Client(timeout=self.timeout, follow_redirects=False) as client:
+                with client.stream("POST", endpoint, json=payload, headers=headers) as response:
+                    if response.status_code in {401, 403}:
+                        raise ExplanationError("AI 服务认证失败，请检查服务端 API Key 与访问权限。", 502)
+                    if response.status_code == 429:
+                        raise ExplanationError("AI 服务请求过于频繁或额度不足，请稍后重试。", 503)
+                    if response.status_code >= 300:
+                        raise ExplanationError("AI 服务暂时未能完成请求，请检查服务端地址、模型配置或服务状态。", 502)
+                    chunks: list[bytes] = []
+                    size = 0
+                    for chunk in response.iter_bytes():
+                        size += len(chunk)
+                        if size > 2 * 1024 * 1024:
+                            raise ExplanationError("AI 学习结果过长，已停止接收。", 502)
                         chunks.append(chunk)
             try:
                 body = json.loads(b"".join(chunks))
