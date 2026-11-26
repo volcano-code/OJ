@@ -160,9 +160,59 @@ def test_direct_teaching_request_works_without_reference_code(monkeypatch):
     result = service.teach("两数之和", "给定数组和目标值，返回两个下标。", "python")
     assert "哈希表" in result
     payload = captured["payload"]
-    assert payload["max_completion_tokens"] == 6144
+    assert payload["max_completion_tokens"] == 8192
     assert payload["messages"][0]["role"] == "system"
     data = json.loads(payload["messages"][1]["content"])
     assert data["has_user_code"] is False
     assert data["language"] == "python"
     assert "不可信" in payload["messages"][0]["content"]
+
+
+
+def test_direct_teaching_accepts_block_style_message_content(monkeypatch):
+    transport(
+        monkeypatch,
+        lambda request: httpx.Response(200, json={
+            "choices": [{
+                "message": {"content": [
+                    {"type": "text", "text": "## 思路推导"},
+                    {"type": "text", "text": "使用哈希表。"},
+                ]},
+                "finish_reason": "stop",
+            }]
+        }),
+    )
+    result = ExplanationService("https://provider.example/v1", model="model").teach(
+        "两数之和", "给定数组和目标值，返回两个下标。", "python"
+    )
+    assert "思路推导" in result
+    assert "使用哈希表" in result
+
+
+def test_direct_teaching_accepts_responses_style_gateway_envelope(monkeypatch):
+    transport(
+        monkeypatch,
+        lambda request: httpx.Response(200, json={
+            "output_text": "## 思路推导\\n使用双指针。"
+        }),
+    )
+    result = ExplanationService("https://provider.example/v1", model="model").teach(
+        "两数之和", "给定数组和目标值，返回两个下标。", "python"
+    )
+    assert "双指针" in result
+
+
+def test_direct_teaching_reports_empty_model_content_clearly(monkeypatch):
+    transport(
+        monkeypatch,
+        lambda request: httpx.Response(200, json={
+            "choices": [{
+                "message": {"content": None},
+                "finish_reason": "stop",
+            }]
+        }),
+    )
+    with pytest.raises(ExplanationError, match="没有可显示的文本内容"):
+        ExplanationService("https://provider.example/v1", model="model").teach(
+            "两数之和", "给定数组和目标值，返回两个下标。", "python"
+        )
