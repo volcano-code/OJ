@@ -2198,3 +2198,29 @@ pre {
 .statement-preview .math-display-block,
 .problem-import-preview .math-display-block,
 .learning-result .math-display-block { max-width:100%; }
+
+
+/* Make powers unmistakably superscript in problem statements and AI lessons.
+   Use the browser's native super baseline instead of a small relative offset. */
+.math-inline sup.math-sup,
+.math-display sup.math-sup {
+  display:inline;
+  position:static !important;
+  top:auto !important;
+  vertical-align:super !important;
+  font-size:.78em;
+  line-height:0;
+  font-style:normal;
+  font-weight:700;
+  color:#14543d;
+  padding-left:.015em;
+}
+.math-inline sub.math-sub,
+.math-display sub.math-sub {
+  position:static !important;
+  bottom:auto !important;
+  vertical-align:sub !important;
+  font-size:.76em;
+  line-height:0;
+  font-style:normal;
+}
