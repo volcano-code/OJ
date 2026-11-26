@@ -65,4 +65,8 @@ const safe = renderInline("$\\text{<img src=x onerror=alert(1)>}$");
 assert.equal(safe.find('img').length, 0);
 assert.match(safe.textContent, /<img src=x/);
 
+const stylesheet = fs.readFileSync('algonote/static/style.css', 'utf8');
+assert.match(stylesheet, /\.math-inline sup\.math-sup[\\s\\S]*?vertical-align:\\s*super\\s*!important/);
+assert.match(stylesheet, /font-size:\\.78em/);
+
 console.log('math renderer tests passed');
